@@ -1,0 +1,12 @@
+[project]
+name = "algorithm-examples-for-seu"
+version = "0.1.0"
+description = "Python 算法样例与中文复习笔记"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "zelo789" }]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+

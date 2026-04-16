@@ -6,6 +6,23 @@
 python demo.py
 ```
 
+按主题运行示例：
+
+```bash
+python cli.py --list
+python cli.py sorting
+python cli.py dp
+python cli.py graph
+python cli.py divide
+python cli.py theory
+```
+
+运行回归测试：
+
+```bash
+python -m unittest discover -s tests
+```
+
 项目结构：
 
 - `algorithms/sorting_search.py`：快速排序、归并排序、堆排序、二分查找、第 k 小元素、随机算法。
@@ -13,6 +30,16 @@ python demo.py
 - `algorithms/greedy_graph.py`：哈夫曼编码、活动选择、并查集、Kruskal、Dijkstra。
 - `algorithms/divide_conquer.py`：最近点对、FFT、多项式乘法、Strassen 矩阵乘法。
 - `algorithms/theory.py`：SAT、3-SAT、TSP 验证与 NP 完全要点。
+- `cli.py`：按主题运行算法示例。
+- `tests/test_algorithms.py`：核心算法回归测试。
+- `docs/exam_quick_review.md`：考前速记版复习材料。
+
+## 建议学习顺序
+
+1. 先读 `README.md` 的复杂度表，建立整体地图。
+2. 再运行 `python cli.py sorting`、`python cli.py dp` 等主题命令，看输入输出。
+3. 打开对应源码，重点看中文注释里的状态定义、贪心选择和复杂度。
+4. 最后读 `docs/exam_quick_review.md`，练习把算法思路写成考试答案。
 
 ## 第一优先：考试/面试核心
 
@@ -80,4 +107,3 @@ python demo.py
 - Kruskal 适合边集排序，用并查集判环。
 - Dijkstra 只能用于非负边权；有负边时考虑 Bellman-Ford。
 - 最小生成树处理的是“连通所有点的最小边权总和”，最短路处理的是“从源点到其他点的最短距离”，别混。
-
