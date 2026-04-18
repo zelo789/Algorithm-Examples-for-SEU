@@ -177,13 +177,36 @@ class ShowcaseAndVisualizationTests(unittest.TestCase):
     def test_visualizer_payload_contains_animation_steps(self) -> None:
         payload = build_visualizer_payload()
         algorithms = {item["id"]: item for item in payload["algorithms"]}
+        topics = {item["slug"] for item in payload["topics"]}
 
         self.assertEqual(payload["title"], "Algorithm Visualizer")
+        self.assertEqual(topics, set(TOPICS))
         self.assertIn("n-queens", algorithms)
         self.assertIn("subset-sum", algorithms)
         self.assertIn("permutations", algorithms)
         self.assertGreater(len(algorithms["n-queens"]["steps"]), 0)
         self.assertIn("message", algorithms["subset-sum"]["steps"][0])
+
+    def test_visualizer_payload_covers_all_topics_with_representative_algorithms(self) -> None:
+        payload = build_visualizer_payload()
+        algorithms = {item["id"]: item for item in payload["algorithms"]}
+        topic_to_algorithms: dict[str, set[str]] = {}
+
+        for algorithm in payload["algorithms"]:
+            topic_to_algorithms.setdefault(algorithm["topic"], set()).add(algorithm["id"])
+
+        self.assertEqual(set(topic_to_algorithms), set(TOPICS))
+        self.assertIn("quick-sort", algorithms)
+        self.assertIn("knapsack-01", algorithms)
+        self.assertIn("dijkstra", algorithms)
+        self.assertIn("closest-pair", algorithms)
+        self.assertIn("sat-solver", algorithms)
+        self.assertEqual(algorithms["quick-sort"]["render_type"], "array")
+        self.assertEqual(algorithms["knapsack-01"]["render_type"], "matrix")
+        self.assertEqual(algorithms["dijkstra"]["render_type"], "graph")
+        self.assertEqual(algorithms["sat-solver"]["render_type"], "formula")
+        self.assertGreaterEqual(len(algorithms["quick-sort"]["steps"]), 3)
+        self.assertGreaterEqual(len(algorithms["knapsack-01"]["steps"]), 3)
 
     def test_visualizer_payload_keeps_static_inputs_in_meta(self) -> None:
         payload = build_visualizer_payload()
@@ -200,16 +223,22 @@ class ShowcaseAndVisualizationTests(unittest.TestCase):
         self.assertNotIn("items", permutations["steps"][0])
 
     def test_visualizer_exposes_builder_registry_and_custom_inputs(self) -> None:
-        self.assertEqual(set(VISUALIZER_BUILDERS), {"n-queens", "subset-sum", "permutations"})
+        self.assertIn("quick-sort", VISUALIZER_BUILDERS)
+        self.assertIn("knapsack-01", VISUALIZER_BUILDERS)
+        self.assertIn("dijkstra", VISUALIZER_BUILDERS)
+        self.assertIn("n-queens", VISUALIZER_BUILDERS)
+        self.assertIn("sat-solver", VISUALIZER_BUILDERS)
 
         queens = build_visualizer_algorithm("n-queens", {"n": 5})
         subset_sum = build_visualizer_algorithm("subset-sum", {"numbers": [2, 2, 5], "target": 4})
         permutations = build_visualizer_algorithm("permutations", {"items": [1, 1, 2]})
+        quick_sort = build_visualizer_algorithm("quick-sort", {"items": [5, 1, 3, 1]})
 
         self.assertEqual(queens["meta"]["size"], 5)
         self.assertEqual(queens["meta"]["solutionCount"], 10)
         self.assertEqual(subset_sum["meta"]["solution"], [2, 2])
         self.assertEqual(permutations["meta"]["items"], [1, 1, 2])
+        self.assertEqual(quick_sort["meta"]["sorted"], [1, 1, 3, 5])
 
     def test_visualizer_rejects_invalid_custom_inputs(self) -> None:
         with self.assertRaisesRegex(ValueError, "algorithm"):
@@ -218,6 +247,8 @@ class ShowcaseAndVisualizationTests(unittest.TestCase):
             build_visualizer_algorithm("n-queens", {"n": 0})
         with self.assertRaisesRegex(ValueError, "target"):
             build_visualizer_algorithm("subset-sum", {"numbers": [1, 2], "target": -1})
+        with self.assertRaisesRegex(ValueError, "items"):
+            build_visualizer_algorithm("quick-sort", {"items": []})
 
     def test_cli_list_shows_backtracking_topic(self) -> None:
         stdout = StringIO()
@@ -250,6 +281,11 @@ class ShowcaseAndVisualizationTests(unittest.TestCase):
             custom_response = connection.getresponse()
             self.assertEqual(custom_response.status, 200)
             self.assertIn('"solutionCount": 10', custom_response.read().decode("utf-8"))
+
+            connection.request("GET", "/api/algorithm?algorithm=quick-sort&items=9,1,5,3")
+            sorting_response = connection.getresponse()
+            self.assertEqual(sorting_response.status, 200)
+            self.assertIn('"sorted": [1, 3, 5, 9]', sorting_response.read().decode("utf-8"))
 
             connection.request("GET", "/api/algorithm?algorithm=n-queens&n=0")
             invalid_response = connection.getresponse()
