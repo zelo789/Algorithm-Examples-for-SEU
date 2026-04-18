@@ -32,6 +32,8 @@ def knapsack_01(weights: list[int], values: list[int], capacity: int) -> Knapsac
         raise ValueError("weights 和 values 长度必须一致")
     if capacity < 0:
         raise ValueError("capacity 不能为负")
+    if any(weight < 0 for weight in weights):
+        raise ValueError("weights 不能包含负数")
 
     n = len(weights)
     dp = [[0] * (capacity + 1) for _ in range(n + 1)]

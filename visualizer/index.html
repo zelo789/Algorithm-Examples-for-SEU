@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algorithm Visualizer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <p class="eyebrow">Algorithm Examples for SEU</p>
+        <h1 id="page-title">Algorithm Visualizer</h1>
+        <p id="page-subtitle" class="hero-copy"></p>
+      </header>
+
+      <main class="layout">
+        <aside class="algorithm-list">
+          <div class="panel-heading">
+            <h2>动画列表</h2>
+            <p>选择一个算法，观察搜索轨迹。</p>
+          </div>
+          <div id="algorithm-buttons" class="algorithm-buttons"></div>
+        </aside>
+
+        <section class="viewer">
+          <div class="viewer-top">
+            <div>
+              <p id="algorithm-kicker" class="viewer-kicker"></p>
+              <h2 id="algorithm-title"></h2>
+              <p id="algorithm-description" class="viewer-description"></p>
+            </div>
+            <div id="meta-chips" class="meta-chips"></div>
+          </div>
+
+          <div id="stage" class="stage"></div>
+
+          <div class="controls">
+            <button id="play-button" class="primary-button" type="button">播放</button>
+            <button id="reset-button" class="ghost-button" type="button">重置</button>
+            <label class="range-label" for="step-range">
+              进度
+              <input id="step-range" type="range" min="0" max="0" value="0" />
+            </label>
+            <label class="speed-label" for="speed-select">
+              速度
+              <select id="speed-select">
+                <option value="1200">慢</option>
+                <option value="700" selected>中</option>
+                <option value="350">快</option>
+              </select>
+            </label>
+          </div>
+
+          <section class="customizer">
+            <div class="panel-heading">
+              <h3>自定义输入</h3>
+              <p>修改输入后重新生成当前算法的动画。</p>
+            </div>
+            <form id="custom-form" class="custom-form">
+              <div id="custom-fields" class="custom-fields"></div>
+              <div class="custom-actions">
+                <button class="primary-button" type="submit">应用输入</button>
+                <button id="defaults-button" class="ghost-button" type="button">恢复默认</button>
+              </div>
+              <p id="custom-error" class="custom-error" hidden></p>
+            </form>
+          </section>
+
+          <div class="details-grid">
+            <section class="detail-card">
+              <h3>当前步骤</h3>
+              <p id="step-message" class="step-message"></p>
+            </section>
+            <section class="detail-card">
+              <h3>伪代码</h3>
+              <ol id="code-list" class="code-list"></ol>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
